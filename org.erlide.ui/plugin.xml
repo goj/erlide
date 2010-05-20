@@ -525,6 +525,11 @@
             description="Definitions in Workspace"
             id="org.erlide.ui.search.implementors.in.workspace"
             name="Definitions in Workspace">
+      <command
+            categoryId="org.erlide.ui.erlideCategory"
+            description="Clean Up..."
+            id="org.erlide.ui.actions.cleanUp"
+            name="Clean Up...">
       </command>
       <command
             categoryId="org.eclipse.search.ui.category.search"
