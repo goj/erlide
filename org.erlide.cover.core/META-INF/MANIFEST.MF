@@ -18,4 +18,5 @@ Export-Package: org.apache.log4j,
  org.erlide.cover.runtime.launch,
  org.erlide.cover.views.model
 Bundle-ClassPath: lib/log4j-1.2.16.jar,
- .
+ .,
+ lib/erjang-0.1.jar

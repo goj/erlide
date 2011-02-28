@@ -1,0 +1,16 @@
+Manifest-Version: 1.0
+Bundle-ManifestVersion: 2
+Bundle-Name: Erjang
+Bundle-SymbolicName: org.erlide.erjang;singleton:=true
+Bundle-Version: 1.0.0.qualifier
+Bundle-Activator: org.erlide.erjang.Activator
+Require-Bundle: org.eclipse.core.runtime
+Bundle-ActivationPolicy: lazy
+Bundle-RequiredExecutionEnvironment: JavaSE-1.6
+Bundle-ClassPath: lib/antlr-3.2.jar,
+ .,
+ lib/js.jar,
+ lib/clj-ds.jar,
+ lib/junit.jar,
+ lib/kilim-0.6-krab.jar,
+ lib/OtpErlang.jar

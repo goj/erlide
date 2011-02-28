@@ -1,9 +1,7 @@
 package org.erlide.cover.core;
 
 import java.net.URL;
-import java.util.Collection;
 import java.util.EnumSet;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 
@@ -19,12 +17,8 @@ import org.eclipse.debug.core.ILaunchConfigurationWorkingCopy;
 import org.eclipse.debug.core.ILaunchManager;
 import org.erlide.backend.BackendCore;
 import org.erlide.backend.runtime.RuntimeInfo;
-import org.erlide.cover.core.api.CoverAPI;
-import org.erlide.cover.core.api.IConfiguration;
 import org.erlide.cover.runtime.launch.CoverLaunchData;
 import org.erlide.cover.runtime.launch.CoverLaunchSettings;
-import org.erlide.cover.runtime.launch.LaunchType;
-import org.erlide.cover.views.model.StatsTreeModel;
 import org.erlide.jinterface.backend.Backend;
 import org.erlide.jinterface.backend.BackendException;
 import org.erlide.jinterface.backend.ErlLaunchAttributes;
@@ -32,6 +26,7 @@ import org.erlide.jinterface.backend.ErtsProcess;
 import org.erlide.runtime.backend.BackendManager;
 import org.erlide.runtime.backend.BackendManager.BackendOptions;
 
+import erjang.Main;
 
 /**
  * Core backend for Cover-plugin
@@ -42,26 +37,25 @@ import org.erlide.runtime.backend.BackendManager.BackendOptions;
 public class CoverBackend {
 
     public static final String NODE_NAME = "cover_internal";
-    
+
     public static CoverBackend instance;
 
     private Backend backend;
     private RuntimeInfo info;
     private ILaunchConfiguration launchConfig;
     private final CoverEventHandler handler;
-//    private CoverLaunchData coverData;
+    // private CoverLaunchData coverData;
     private CoverLaunchSettings settings;
     private String nodeName;
     private boolean coverRunning;
-    
-    private Logger log;      //logger
-    
+
+    private Logger log; // logger
+
     static {
         // logger configuration
-        URL logURL = Platform.getBundle(
-                "org.erlide.cover.core").
-                getEntry("/logs.conf");
-        
+        URL logURL = Platform.getBundle("org.erlide.cover.core").getEntry(
+                "/logs.conf");
+
         PropertyConfigurator.configure(logURL);
     }
 
@@ -79,22 +73,21 @@ public class CoverBackend {
     }
 
     public void initialize(/* final ErlLaunchData data, */
-            final CoverLaunchData coverData) {
+    final CoverLaunchData coverData) {
 
-       // this.coverData = coverData;
+        // this.coverData = coverData;
 
         settings = new CoverLaunchSettings(coverData.getType(), coverData);
 
         if (backend != null && !backend.isStopped()) {
-        	log.debug("is started");
+            log.debug("is started");
             return;
         } else if (backend != null) {
             backend.stop();
         }
 
-        RuntimeInfo rt0  = RuntimeInfo.copy(BackendCore
-                .getRuntimeInfoManager().getErlideRuntime(), false);
-        
+        RuntimeInfo rt0 = RuntimeInfo.copy(BackendCore.getRuntimeInfoManager()
+                .getErlideRuntime(), false);
 
         if (rt0 == null) {
             log.error(String.format("Could not find runtime %s", BackendCore
@@ -103,7 +96,7 @@ public class CoverBackend {
         }
 
         log.debug("create backend");
-        
+
         info = buildRuntimeInfo(rt0);
         final EnumSet<BackendOptions> options = EnumSet
                 .of(BackendOptions.AUTOSTART/* BackendOptions.NO_CONSOLE */);
@@ -115,6 +108,25 @@ public class CoverBackend {
             backend.getEventDaemon().addHandler(handler);
         } catch (final BackendException e) {
             handleError("Could not create backend " + e);
+        }
+
+        // erjang
+        System.setProperty(
+                "erjang.configfile",
+                "/home/wirenth/workspace/erlide2/erlide/org.erlide.cover.core/erjang_cfg.properties");
+        System.setProperty("erjang.erts.version", "5.8");
+        System.setProperty("erjang.otp.version", "R14A");
+
+        String[] args = { "-progname", "ej", "-home", "/home/wirenth", "-root",
+                "/usr/local/erlang/r14a/lib/erlang", "+A", "10", "+S", "1",
+                "+e", "5.8" };
+        
+        
+        try {
+            Main.main(args);
+        } catch (Exception e) {
+            log.debug("Erjang Exception");
+            e.printStackTrace();
         }
 
     }
